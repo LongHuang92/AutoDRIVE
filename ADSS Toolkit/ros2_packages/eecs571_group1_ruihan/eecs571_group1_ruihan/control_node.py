@@ -86,59 +86,62 @@ class Control(Node):
         '''
 
         # Vehicle control
+        
         delta_angle = 0
         if abs(steering_angle) > self.straights_steering_angle:
             target_speed = 1.5 / (np.sqrt(abs(steering_angle)))
-            delta_angle = abs(self.prev_angle / steering_angle)
-            if delta_angle < 0.9: #brake
-                self.prev_angle = steering_angle
-                steering_angle *= (1.1/delta_angle)
-                target_speed *= 0.8
-            elif delta_angle < 1.02:
-                self.prev_angle = steering_angle
-                steering_angle *= 1.1
-            else:
-                self.prev_angle = steering_angle
-                steering_angle *= 0.9
+            # delta_angle = abs(self.prev_angle / steering_angle)
+            # if delta_angle < 0.9: #brake
+                # self.prev_angle = steering_angle
+                # steering_angle *= (1.1/delta_angle)
+                # target_speed *= 0.8
+            # elif delta_angle < 1.02:
+                # self.prev_angle = steering_angle
+                # steering_angle *= 1.1
+            # else:
+                # self.prev_angle = steering_angle
+                # steering_angle *= 0.9
         elif abs(steering_angle) > self.straights_steering_angle:
             target_speed = 1.5 / (np.sqrt(abs(steering_angle)))
-            delta_angle = abs(self.prev_angle / steering_angle)
-            if delta_angle < 0.95: #brake
-                self.prev_angle = steering_angle
-                target_speed *= (delta_angle * 0.75)
-                steering_angle *= 1.2
-            elif delta_angle < 1.02:
-                self.prev_angle = steering_angle
-                steering_angle *= 1.02
-            else:
-                self.prev_angle = steering_angle
-                steering_angle *= 0.9
+            # delta_angle = abs(self.prev_angle / steering_angle)
+            # if delta_angle < 0.95: #brake
+                # self.prev_angle = steering_angle
+                # target_speed *= (delta_angle * 0.75)
+                # steering_angle *= 1.2
+            # elif delta_angle < 1.02:
+                # self.prev_angle = steering_angle
+                # steering_angle *= 1.02
+            # else:
+                # self.prev_angle = steering_angle
+                # steering_angle *= 0.9
         elif abs(steering_angle) > self.fast_steering_angle:
             target_speed = 1.5 / (np.sqrt(abs(steering_angle)))
-            delta_angle = abs(self.prev_angle/ steering_angle)
-            if delta_angle < 1: #brake
-                self.prev_angle = steering_angle
-                target_speed *= (delta_angle * 0.75)
-            elif delta_angle > 2:
-                self.prev_angle = steering_angle
-                steering_angle *= 0.9
-            else:
-                self.prev_angle = steering_angle
+            # delta_angle = abs(self.prev_angle/ steering_angle)
+            # if delta_angle < 1: #brake
+                # self.prev_angle = steering_angle
+                # target_speed *= (delta_angle * 0.75)
+            # elif delta_angle > 2:
+                # self.prev_angle = steering_angle
+                # steering_angle *= 0.9
+            # else:
+                # self.prev_angle = steering_angle
         elif abs(steering_angle) > self.light_steering_angle:
             target_speed = self.fast_speed
-            delta_angle = abs(steering_angle / self.prev_angle)
-            if delta_angle < 1: #brake
-                self.prev_angle = steering_angle
-                target_speed *= 0.9
-            else:
-                self.prev_angle = steering_angle
+            # delta_angle = abs(steering_angle / self.prev_angle)
+            # if delta_angle < 1: #brake
+                # self.prev_angle = steering_angle
+                # target_speed *= 0.9
+            # else:
+                # self.prev_angle = steering_angle
         else:
             target_speed = self.fast_speed
-            self.prev_angle = steering_angle
+            # self.prev_angle = steering_angle
         
+        steering_angle = steering_angle ** 3 / (abs(steering_angle)**0.5)
+
         drive_msg = AckermannDriveStamped()
-        drive_msg.drive.steering_angle = np.clip(steering_angle, -self.max_steer, self.max_steer)
-        drive_msg.drive.speed = target_speed / 5 # [-1, 1]
+        drive_msg.drive.steering_angle = np.clip(-steering_angle*1.7, -self.max_steer, self.max_steer)
+        drive_msg.drive.speed = np.clip(target_speed, -self.max_steer, self.max_steer) #target_speed / 5 # [-1, 1]
 
         self._cmd_drive_pub.publish(drive_msg)
         
@@ -166,7 +169,7 @@ class Control(Node):
         # I think we will only ever have a maximum of 2 slices but will handle an
         # indefinitely sized list for portablility
         for sl in slices[::-1]:
-            print(sl)
+            # print(sl)
             sl_len = sl.stop - sl.start
             if sl_len > self.safe_threshold:
                 chosen_slice = sl
