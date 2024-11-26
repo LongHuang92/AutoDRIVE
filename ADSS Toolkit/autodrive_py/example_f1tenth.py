@@ -54,6 +54,14 @@ def bridge(sid, data):
         scan_1 = f1tenth_1.lidar_range_array
         # scan_2 = f1tenth_2.lidar_range_array
 
+        # Adjust the lidar scan according to the measured obstacle speed
+        obstacle_index = moving_object_detection(camera_view) # there could be multiple moving objects 
+        obstacle_speed = track_object_speed(scan,last_scan,obstacle_index)
+        speed_threshold = 0
+        scan_adjusted = scan
+        if obstacle_speed > speed_threshold:
+            scan_adjusted[obstacle_index] = float('inf')
+
         # curr_position = np.array(list(map(float, data['V1 Position'].split(" "))))
         # global last_position
         # if last_position is None:
