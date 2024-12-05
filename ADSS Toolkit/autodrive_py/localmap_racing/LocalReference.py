@@ -82,9 +82,9 @@ class LocalReference:
         plt.figure(2)
         plt.clf()
 
-        plt.plot(self.center_lut_x(self.s_track), self.center_lut_y(self.s_track), label="center", color='blue', alpha=0.7)
-        plt.plot(self.left_lut_x(self.s_track), self.left_lut_y(self.s_track), label="left", color='green', alpha=0.7)
-        plt.plot(self.right_lut_x(self.s_track), self.right_lut_y(self.s_track), label="right", color='green', alpha=0.7)
+        plt.plot(self.center_lut_x(self.s_track).full(), self.center_lut_y(self.s_track).full(), label="center", color='blue', alpha=0.7)
+        plt.plot(self.left_lut_x(self.s_track).full(), self.left_lut_y(self.s_track).full(), label="left", color='green', alpha=0.7)
+        plt.plot(self.right_lut_x(self.s_track).full(), self.right_lut_y(self.s_track).full(), label="right", color='green', alpha=0.7)
 
         # plt.show()
 

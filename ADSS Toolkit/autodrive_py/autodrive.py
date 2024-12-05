@@ -131,12 +131,14 @@ class F1TENTH:
         # F1TENTH commands
         self.throttle_command   = None
         self.steering_command   = None
+        self.speed = None
     
     # Parse F1TENTH sensor data
     def parse_data(self, data, verbose=False):
         # Actuator feedbacks
         self.throttle = float(data[self.id + " Throttle"])
         self.steering = float(data[self.id + " Steering"])
+        self.speed = float(data[self.id + " Speed"])
         # Wheel encoders
         self.encoder_ticks = np.fromstring(data[self.id + " Encoder Ticks"], dtype=int, sep=' ')
         self.encoder_angles = np.fromstring(data[self.id + " Encoder Angles"], dtype=float, sep=' ')
@@ -160,6 +162,7 @@ class F1TENTH:
             # Monitor F1TENTH data
             print('Throttle: {}'.format(self.throttle))
             print('Steering: {}'.format(self.steering))
+            print('Speed: {}'.format(self.speed))
             print('Encoder Ticks:  {} {}'.format(self.encoder_ticks[0],self.encoder_ticks[1]))
             print('Encoder Angles: {} {}'.format(self.encoder_angles[0],self.encoder_angles[1]))
             print('Position: {} {} {}'.format(self.position[0],self.position[1],self.position[2]))
