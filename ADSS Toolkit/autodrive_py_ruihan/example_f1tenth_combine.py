@@ -64,6 +64,7 @@ def bridge(sid, data):
         proc_ranges = preprocess_lidar(f1tenth_1.lidar_range_array)
         closest = proc_ranges.argmin()
 
+        plot_lidar_readings(f1tenth_1.lidar_range_array, 1, 350)
         # Camera object detection
         y, x, _ = f1tenth_1.front_camera_image.shape
         for detection in f1tenth_1.detections:
@@ -73,6 +74,8 @@ def bridge(sid, data):
             print(f'Image size {x} * {y}, Detected {class_name} with confidence {conf:.2f} at [{x1}, {y1}, {x2}, {y2}], relative position {180-left} to {180-right}')
             if (class_name == "car" or class_name == "truck" or class_name == "train" or class_name == "bus" or class_name == "boat"):
                 # TODO: LIDAR
+
+                plot_lidar_readings(f1tenth_1.lidar_range_array, 1, 350)
                 read_range = get_car_read(f1tenth_1.lidar_range_array, 170, 190)
                 obj_speed = find_speed(read_range)
                 print("object speed: ", obj_speed)
@@ -300,17 +303,20 @@ def find_speed(distance_new):
     return car_speed
 
 def plot_lidar_readings(readings, degreeStart, degreeEnd):
-
+    # print("this is the plot function")
+    # np.set_printoptions(threshold=np.inf)
     
     angles = np.linspace(0, 2 * np.pi, len(readings))
 
     x = readings * np.cos(angles)
     y = readings * np.sin(angles)
 
+    print("lidar: ", readings.tolist())
+
     indexStart = int((degreeStart / 360) * 1081)
     indexEnd = int((degreeEnd / 360) * 1081)
 
-    plt.figure(figsize=(8, 8))
+    plt.figure(num=1, figsize=(8, 8))
     plt.scatter(x[:indexStart], y[:indexStart], s=10, c='blue')
     plt.scatter(x[indexStart:indexEnd], y[indexStart:indexEnd], s=10, c='red')
     plt.scatter(x[indexEnd:], y[indexEnd:], s=1, c='blue')
@@ -319,8 +325,9 @@ def plot_lidar_readings(readings, degreeStart, degreeEnd):
     plt.ylabel('Y (meters)')
     plt.axis('equal')
     plt.grid(True)
-    plt.legend()
+    plt.legend(["This is my legend"], fontsize="x-large")
     plt.show()
+    plt.pause(0.001)
 
 ################################################################################
 
