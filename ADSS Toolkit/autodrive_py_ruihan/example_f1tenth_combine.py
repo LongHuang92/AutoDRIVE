@@ -76,7 +76,8 @@ def bridge(sid, data):
                 read_range = get_car_read(f1tenth_1.lidar_range_array, 170, 190)
                 obj_speed = find_speed(read_range)
                 print("object speed: ", obj_speed)
-            
+                if obj_speed >= f1tenth_1.speed:
+                    proc_ranges[right:left + 1] = (proc_ranges[right] + proc_ranges[left]) / 2
             break
 
 
@@ -167,7 +168,7 @@ def bridge(sid, data):
         else:
             target_speed = fast_speed
             prev_angle = steering_angle
-        f1tenth_1.throttle_command = target_speed / 20 #5 # [-1, 1]
+        f1tenth_1.throttle_command = target_speed / 5 #5 # [-1, 1]
         f1tenth_1.steering_command = np.clip(steering_angle, -max_steer, max_steer) # [-1, 1]
 
         ########################################################################
