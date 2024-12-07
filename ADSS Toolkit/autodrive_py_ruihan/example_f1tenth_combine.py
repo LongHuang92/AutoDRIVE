@@ -56,13 +56,15 @@ def bridge(sid, data):
         ########################################################################
 
         # Vehicle data
-        f1tenth_1.parse_data(data, verbose=False)
+        f1tenth_1.parse_data(data, verbose=True)
         '''
         Implement peception stack here.
         '''
         # Find closest point to LiDAR
         proc_ranges = preprocess_lidar(f1tenth_1.lidar_range_array)
         closest = proc_ranges.argmin()
+
+        # plot_lidar_readings(proc_ranges,0,270)
 
         # Camera object detection
         y, x, _ = f1tenth_1.front_camera_image.shape
@@ -179,7 +181,7 @@ def bridge(sid, data):
         else:
             target_speed = fast_speed
             prev_angle = steering_angle
-        f1tenth_1.throttle_command = target_speed / 5 #5 # [-1, 1]
+        f1tenth_1.throttle_command = target_speed / 20 #5 # [-1, 1]
         f1tenth_1.steering_command = np.clip(steering_angle, -max_steer, max_steer) # [-1, 1]
 
         ########################################################################
@@ -322,7 +324,7 @@ def plot_lidar_readings(readings, degreeStart, degreeEnd):
     indexStart = int((degreeStart / 360) * 1081)
     indexEnd = int((degreeEnd / 360) * 1081)
 
-    plt.figure(figsize=(8, 8))
+    plt.figure(1,figsize=(8, 8))
     plt.scatter(x[:indexStart], y[:indexStart], s=10, c='blue')
     plt.scatter(x[indexStart:indexEnd], y[indexStart:indexEnd], s=10, c='red')
     plt.scatter(x[indexEnd:], y[indexEnd:], s=1, c='blue')
@@ -333,6 +335,7 @@ def plot_lidar_readings(readings, degreeStart, degreeEnd):
     plt.grid(True)
     plt.legend()
     plt.show()
+    plt.pause(0.001)
 
 def intersect(det, kept):
     x11, y11, x12, y12, _, _ = det
