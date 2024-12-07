@@ -29,7 +29,7 @@ class Control(Node):
         self.bubble_radius = 200
         self.preprocess_conv_size = 3
         self.best_point_conv_size = 90
-        self.max_lidar_dist = 10.0
+        self.max_lidar_dist = 1
         self.fast_speed = 5.1
         self.straights_speed = 5.0
         self.corners_speed = 3.0
@@ -38,7 +38,7 @@ class Control(Node):
         self.fast_steering_angle = 0.08
         self.light_steering_angle = 0.04
         self.safe_threshold = 5
-        self.max_steer = 1
+        self.max_steer = 2
         self.radians_per_elem = 0
         self.prev_angle = 0.0
 
@@ -90,58 +90,58 @@ class Control(Node):
         delta_angle = 0
         if abs(steering_angle) > self.straights_steering_angle:
             target_speed = 1.5 / (np.sqrt(abs(steering_angle)))
-            # delta_angle = abs(self.prev_angle / steering_angle)
-            # if delta_angle < 0.9: #brake
-                # self.prev_angle = steering_angle
-                # steering_angle *= (1.1/delta_angle)
+            delta_angle = abs(self.prev_angle / steering_angle)
+            if delta_angle < 1: #0.9: #brake
+                self.prev_angle = steering_angle
+                steering_angle *= (1.1/delta_angle)
                 # target_speed *= 0.8
             # elif delta_angle < 1.02:
                 # self.prev_angle = steering_angle
                 # steering_angle *= 1.1
-            # else:
-                # self.prev_angle = steering_angle
+            else:
+                self.prev_angle = steering_angle
                 # steering_angle *= 0.9
         elif abs(steering_angle) > self.straights_steering_angle:
             target_speed = 1.5 / (np.sqrt(abs(steering_angle)))
-            # delta_angle = abs(self.prev_angle / steering_angle)
-            # if delta_angle < 0.95: #brake
-                # self.prev_angle = steering_angle
+            delta_angle = abs(self.prev_angle / steering_angle)
+            if delta_angle < 1: #0.95: #brake
+                self.prev_angle = steering_angle
                 # target_speed *= (delta_angle * 0.75)
-                # steering_angle *= 1.2
+                steering_angle *= 1.2
             # elif delta_angle < 1.02:
                 # self.prev_angle = steering_angle
                 # steering_angle *= 1.02
-            # else:
-                # self.prev_angle = steering_angle
+            else:
+                self.prev_angle = steering_angle
                 # steering_angle *= 0.9
         elif abs(steering_angle) > self.fast_steering_angle:
             target_speed = 1.5 / (np.sqrt(abs(steering_angle)))
-            # delta_angle = abs(self.prev_angle/ steering_angle)
-            # if delta_angle < 1: #brake
-                # self.prev_angle = steering_angle
+            delta_angle = abs(self.prev_angle/ steering_angle)
+            if delta_angle < 1: #brake
+                self.prev_angle = steering_angle
                 # target_speed *= (delta_angle * 0.75)
             # elif delta_angle > 2:
                 # self.prev_angle = steering_angle
                 # steering_angle *= 0.9
-            # else:
-                # self.prev_angle = steering_angle
+            else:
+                self.prev_angle = steering_angle
         elif abs(steering_angle) > self.light_steering_angle:
             target_speed = self.fast_speed
-            # delta_angle = abs(steering_angle / self.prev_angle)
-            # if delta_angle < 1: #brake
-                # self.prev_angle = steering_angle
+            delta_angle = abs(steering_angle / self.prev_angle)
+            if delta_angle < 1: #brake
+                self.prev_angle = steering_angle
                 # target_speed *= 0.9
-            # else:
-                # self.prev_angle = steering_angle
+            else:
+                self.prev_angle = steering_angle
         else:
             target_speed = self.fast_speed
-            # self.prev_angle = steering_angle
+            self.prev_angle = steering_angle
         
-        steering_angle = steering_angle ** 3 / (abs(steering_angle)**0.5)
+        steering_angle = steering_angle ** 3 / abs(steering_angle)
 
         drive_msg = AckermannDriveStamped()
-        drive_msg.drive.steering_angle = np.clip(-steering_angle*1.7, -self.max_steer, self.max_steer)
-        drive_msg.drive.speed = np.clip(target_speed, -self.max_steer, self.max_steer) #target_speed / 5 # [-1, 1]
+        drive_msg.drive.steering_angle = np.clip(-steering_angle*1.1, -self.max_steer, self.max_steer)
+        drive_msg.drive.speed = np.clip(target_speed, -0.3, 0.3) #target_speed / 5 # [-1, 1]
 
         self._cmd_drive_pub.publish(drive_msg)
         
@@ -152,7 +152,7 @@ class Control(Node):
         """
         self.radians_per_elem = (2 * np.pi) / len(ranges)
         # we won't use the LiDAR data from directly behind us
-        proc_ranges = np.array(ranges[135:-135])
+        proc_ranges = np.array(ranges[105:-105])
         # sets each value to the mean over a given window
         proc_ranges = np.convolve(proc_ranges, np.ones(self.preprocess_conv_size), 'same') / self.preprocess_conv_size
         proc_ranges = np.clip(proc_ranges, 0, self.max_lidar_dist)
