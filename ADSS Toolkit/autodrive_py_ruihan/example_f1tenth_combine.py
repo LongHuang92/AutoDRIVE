@@ -66,19 +66,30 @@ def bridge(sid, data):
 
         # Camera object detection
         y, x, _ = f1tenth_1.front_camera_image.shape
+        filtered_detections = []
         for detection in f1tenth_1.detections:
             x1, y1, x2, y2, conf, cls = detection
             class_name = f1tenth_1.model.names[int(cls)]
             left, right = obstacle_angle(x1, y1, x2, y2, x, y)
             print(f'Image size {x} * {y}, Detected {class_name} with confidence {conf:.2f} at [{x1}, {y1}, {x2}, {y2}], relative position {180-left} to {180-right}')
+            keep = False
             if (class_name == "car" or class_name == "truck" or class_name == "train" or class_name == "bus" or class_name == "boat"):
-                # TODO: LIDAR
-                read_range = get_car_read(f1tenth_1.lidar_range_array, 170, 190)
-                obj_speed = find_speed(read_range)
-                print("object speed: ", obj_speed)
-                if obj_speed >= f1tenth_1.speed:
-                    proc_ranges[right:left + 1] = (proc_ranges[right] + proc_ranges[left]) / 2
-            break
+                keep = True
+            for kept_det in filtered_detections:
+                if keep == False:
+                    break
+                if intersect(detection, kept_det) > 0.5:
+                    keep = False
+            if keep:
+                filtered_detections.append(detection)
+        for detection in filtered_detections:
+            x1, y1, x2, y2, conf, cls = detection
+            left, right = obstacle_angle(x1, y1, x2, y2, x, y)
+            read_range = get_car_read(f1tenth_1.lidar_range_array, 170, 190)
+            obj_speed = find_speed(read_range)
+            print("object speed: ", obj_speed)
+            if obj_speed >= f1tenth_1.speed:
+                proc_ranges[right:left + 1] = (proc_ranges[right] + proc_ranges[left]) / 2
 
 
         ########################################################################
@@ -323,6 +334,16 @@ def plot_lidar_readings(readings, degreeStart, degreeEnd):
     plt.legend()
     plt.show()
 
+def intersect(det, kept):
+    x11, y11, x12, y12, _, _ = det
+    x21, y21, x22, y22, _, _ = kept
+    x_1 = max(x11, x21)
+    x_2 = min(x12, x22)
+    y_1 = max(y11, y21)
+    y_2 = min(y21, y22)
+    if x_1 >= x_2 or y_1 >= y_2:
+        return 0
+    return (x_2-x_1)*(y_2-y_1) / ((y12-y11)*(x12-x11))
 ################################################################################
 
 if __name__ == '__main__':
