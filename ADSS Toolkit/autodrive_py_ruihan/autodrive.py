@@ -117,6 +117,7 @@ class F1TENTH:
         self.id                       = None
         self.throttle                 = None
         self.steering                 = None
+        self.speed                    = None
         self.encoder_ticks            = None
         self.encoder_angles           = None
         self.position                 = None
@@ -140,6 +141,7 @@ class F1TENTH:
         # Actuator feedbacks
         self.throttle = float(data[self.id + " Throttle"])
         self.steering = float(data[self.id + " Steering"])
+        self.speed = float(data[self.id + " Speed"])
         # Wheel encoders
         self.encoder_ticks = np.fromstring(data[self.id + " Encoder Ticks"], dtype=int, sep=' ')
         self.encoder_angles = np.fromstring(data[self.id + " Encoder Angles"], dtype=float, sep=' ')

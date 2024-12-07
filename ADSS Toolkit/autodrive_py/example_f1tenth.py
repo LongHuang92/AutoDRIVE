@@ -57,40 +57,40 @@ def bridge(sid, data):
 
         scan_adjusted_1 = scan_1.copy()
 
-        global last_scan_1
-        if last_scan_1 is not None:
-            scan_diff_1 = scan_1 - last_scan_1
+        # global last_scan_1
+        # if last_scan_1 is not None:
+        #     scan_diff_1 = scan_1 - last_scan_1
 
-            index_diff = np.where(scan_diff_1[450:650] > 1) # find points whose relative speed > 1
-            index_scan = np.where(scan_1[450:650] < 2) # find points whose relative distance < 2
-            index = np.intersect1d(index_diff[0], index_scan[0])
-            print(index_diff[0])
-            print(index_scan[0])
-            print(index)
+        #     index_diff = np.where(scan_diff_1[450:650] > 1) # find points whose relative speed > 1
+        #     index_scan = np.where(scan_1[450:650] < 2) # find points whose relative distance < 2
+        #     index = np.intersect1d(index_diff[0], index_scan[0])
+        #     print(index_diff[0])
+        #     print(index_scan[0])
+        #     print(index)
 
-            # if index_scan[0].size > 20:
-            #     scan_adjusted_1[600:1081] = 0.5
-            #     print(scan_adjusted_1)
+        #     # if index_scan[0].size > 20:
+        #     #     scan_adjusted_1[600:1081] = 0.5
+        #     #     print(scan_adjusted_1)
 
-            # if index.size > 0:
-            #     scan_adjusted_1[450+index] = 6 
+        #     # if index.size > 0:
+        #     #     scan_adjusted_1[450+index] = 6 
 
-            fig, axs = plt.subplots(4, 1, num=3, clear=True, figsize=(8, 10))
-            axs[0].plot(last_scan_1)
-            axs[0].set_ylim([0,10])
-            axs[0].set_ylabel('Last Scan')
-            axs[1].plot(scan_1)
-            axs[1].set_ylim([0,10])
-            axs[1].set_ylabel('Current Scan')
-            axs[2].plot(scan_diff_1)
-            axs[2].set_ylim([-5,10])
-            axs[2].set_ylabel('Scan Difference')
-            axs[3].plot(scan_adjusted_1)
-            axs[3].set_ylim([-5,10])
-            axs[3].set_ylabel('Adjusted Scan')
-            plt.pause(0.001)
+        #     fig, axs = plt.subplots(4, 1, num=3, clear=True, figsize=(8, 10))
+        #     axs[0].plot(last_scan_1)
+        #     axs[0].set_ylim([0,10])
+        #     axs[0].set_ylabel('Last Scan')
+        #     axs[1].plot(scan_1)
+        #     axs[1].set_ylim([0,10])
+        #     axs[1].set_ylabel('Current Scan')
+        #     axs[2].plot(scan_diff_1)
+        #     axs[2].set_ylim([-5,10])
+        #     axs[2].set_ylabel('Scan Difference')
+        #     axs[3].plot(scan_adjusted_1)
+        #     axs[3].set_ylim([-5,10])
+        #     axs[3].set_ylabel('Adjusted Scan')
+        #     plt.pause(0.001)
 
-        last_scan_1 = scan_1
+        # last_scan_1 = scan_1
 
         # Adjust the lidar scan according to the measured obstacle speed
         # obstacle_index = moving_object_detection(camera_view) # there could be multiple moving objects 
