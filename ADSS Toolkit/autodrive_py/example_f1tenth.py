@@ -46,7 +46,7 @@ def bridge(sid, data):
         ########################################################################
 
         # Vehicle data
-        f1tenth_1.parse_data(data, verbose=True)
+        f1tenth_1.parse_data(data, verbose=False)
         # f1tenth_2.parse_data(data, verbose=True)
 
         '''
@@ -135,15 +135,15 @@ def bridge(sid, data):
         '''
 
         # Vehicle control
-        f1tenth_1.throttle_command = action_1[1]*0.02#0.03 # [-1, 1]
-        f1tenth_1.steering_command = action_1[0]*2 # [-1, 1]
+        f1tenth_1.throttle_command = action_1[1]*0.05 #*0.05#0.03 # [-1, 1]
+        f1tenth_1.steering_command = action_1[0] # [-1, 1]
 
         # f1tenth_2.throttle_command = action_2[1]*0.01 # [-1, 1]
         # f1tenth_2.steering_command = action_2[0]*2 # [-1, 1]
 
         ########################################################################
 
-        json_msg_1 = f1tenth_1.generate_commands(verbose=True) # Generate vehicle 1 message
+        json_msg_1 = f1tenth_1.generate_commands(verbose=False) # Generate vehicle 1 message
         # json_msg_2 = f1tenth_2.generate_commands(verbose=True) # Generate vehicle 2 message
 
         try:

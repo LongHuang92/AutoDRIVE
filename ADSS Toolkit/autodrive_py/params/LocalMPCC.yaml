@@ -1,7 +1,7 @@
 position_min: -100
 position_max: 100
 heading_max: 20
-delta_max: 0.4
+delta_max: 1
 local_path_max_length: 300
 max_speed: 8
 min_speed: 2

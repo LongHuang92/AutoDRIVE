@@ -7,10 +7,10 @@ import trajectory_planning_helpers as tph
 np.set_printoptions(precision=4)
 
 DISTNACE_THRESHOLD = 1.4 # distance in m for an exception
-TRACK_WIDTH = 1.8 # use fixed width
+TRACK_WIDTH = 1.4 # use fixed width
 FOV = 4.7
 BOUNDARY_SMOOTHING = 0.2
-MAX_TRACK_WIDTH = 1.8 #2.5
+MAX_TRACK_WIDTH = 1.4 #2.5
 TRACK_SEPEARTION_DISTANCE = 0.2 #0.4
 BOUNDARY_STEP_SIZE = 0.4
 # FILTER_THRESHOLD = 2.4

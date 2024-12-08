@@ -136,7 +136,7 @@ class LocalMPCC(BasePlanner):
         np.save(self.mpcc_data_path + f"Controls_{self.step_counter}.npy", controls)
 
         # self.plot_vehicle_controls(self.vehicle_params,controls)
-        self.plot_vehicle_position(x0, states, controls)
+        # self.plot_vehicle_position(x0, states, controls)
         
         return action 
 
