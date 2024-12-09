@@ -248,9 +248,9 @@ def obstacle_angle(x_min, y_min, x_max, y_max, x=640,y=360):
     left = 0
     right = 0
     if (x_min - x_center != 0):
-        left = y_min / (x_min - x_center)
+        left = (y-y_max) / (x_min - x_center)
     if (x_min - x_center != 0):
-        right = y_min / (x_max - x_center)
+        right = (y-y_max) / (x_max - x_center)
     return (obstacle_angle_helper(left)+15), obstacle_angle_helper(right)
 
 def obstacle_angle_helper(a):
