@@ -136,7 +136,7 @@ class LocalMPCC(BasePlanner):
         np.save(self.mpcc_data_path + f"Controls_{self.step_counter}.npy", controls)
 
         # self.plot_vehicle_controls(self.vehicle_params,controls)
-        # self.plot_vehicle_position(x0, states, controls)
+        self.plot_vehicle_position(x0, states, controls)
         
         return action 
 
@@ -283,9 +283,9 @@ class LocalMPCC(BasePlanner):
             ys = [states[i, 1], c_pts[i][1]]
             plt.plot(xs, ys, '--', color='orange')
 
-        size = 12
+        size = 10
         plt.xlim([x0[0] - size, x0[0] + size])
-        plt.ylim([x0[1] - size, x0[1] + size])
+        plt.ylim([x0[1] - 5, x0[1] + 5])
         plt.pause(0.001)# return the first control action
 
 def normalise_psi(psi):

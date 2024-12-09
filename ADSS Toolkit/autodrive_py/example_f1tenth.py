@@ -8,7 +8,7 @@ import autodrive
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-# from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans
 
 # added by Long 11/2//2024
 from localmap_racing.localMPCC import LocalMPCC
@@ -62,8 +62,8 @@ def bridge(sid, data):
         if last_scan_1 is not None:
             scan_diff_1 = scan_1 - last_scan_1
 
-            range_start = 500
-            range_end = 600
+            range_start = 450
+            range_end = 650
 
             index_distance = np.where(scan_1[range_start:range_end] < 2) # find points whose relative distance less than a threshold
             index_speed = np.where(scan_diff_1[range_start:range_end] > 0.5) # find points whose relative speed greater than a threshold
@@ -73,20 +73,18 @@ def bridge(sid, data):
             # print(index)
 
             # if index_distance[0].size > 0:
-            #     scan_adjusted_1[0:range_start+index_distance[0][0]] = np.linspace(scan_1[0],scan_1[range_start+index_distance[0]][0],range_start+index_distance[0])
-            scan_adjusted_1[range_start+index] = np.inf
+            #     scan_adjusted_1[0:range_start+index_distance[0][0]] = np.linspace(scan_1[0],scan_1[range_start+index_distance[0][0]],range_start+index_distance[0][0])
+            scan_adjusted_1[range_start+index_distance[0]] = np.inf
 
             # if index_distance[0].size > 20:
             #     if index.size > 0:
             #         scan_adjusted_1[range_start+index_distance[0]] = np.linspace(scan_1[range_start+np.min(index_distance[0])-1], 10, index_distance[0].size)
             #         scan_adjusted_1[range_start+index_distance[0]] = np.inf
 
-            
-
             # angle = np.arange(len(scan_1))/len(scan_1)*270/180*math.pi - math.pi/4
 
             # # use clustering methods to find obstacles
-            # clustering = KMeans(n_clusters=4)
+            # clustering = KMeans(n_clusters=8)
             # X = np.vstack((np.multiply(scan_1, np.cos(angle)),np.multiply(scan_1, np.sin(angle)))).transpose()
             # clustering.fit(X.clip(0,10))
             # labels = clustering.labels_
