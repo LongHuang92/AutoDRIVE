@@ -6,9 +6,11 @@ import eventlet
 from flask import Flask
 import autodrive
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import statistics
 import time
+import math
 # Global Variables
 
 bubble_radius = 200
@@ -30,11 +32,10 @@ prev_angle = 0.0
 distance_old = 1
 timeread_old = 1
 ################################################################################
-
 # Initialize vehicle(s)
 f1tenth_1 = autodrive.F1TENTH()
 f1tenth_1.id = 'V1'
-
+matplotlib.use('TkAgg')
 # Initialize the server
 sio = socketio.Server()
 
@@ -65,7 +66,7 @@ def bridge(sid, data):
         closest = proc_ranges.argmin()
 
         # plot_lidar_readings(proc_ranges,0,270)
-
+        lidar_copy = f1tenth_1.lidar_range_array
         # Camera object detection
         y, x, _ = f1tenth_1.front_camera_image.shape
         filtered_detections = []
@@ -78,8 +79,6 @@ def bridge(sid, data):
             if (class_name == "car" or class_name == "truck" or class_name == "train" or class_name == "bus" or class_name == "boat"):
                 keep = True
             for kept_det in filtered_detections:
-                if keep == False:
-                    break
                 if intersect(detection, kept_det) > 0.5:
                     keep = False
             if keep:
@@ -90,9 +89,19 @@ def bridge(sid, data):
             read_range = get_car_read(f1tenth_1.lidar_range_array, 170, 190)
             obj_speed = find_speed(read_range)
             print("object speed: ", obj_speed)
-            if obj_speed >= f1tenth_1.speed:
-                proc_ranges[right:left + 1] = (proc_ranges[right] + proc_ranges[left]) / 2
+            if obj_speed >= 0:
+                start_index = right * 3
+                end_index = left * 3 + 1
 
+                # Get the starting and ending values (keep them as is)
+                start_val = lidar_copy[start_index]
+                end_val = lidar_copy[end_index]
+
+                # Generate a linearly spaced array from start_val to end_val 
+                # over the span of the indices. This includes both endpoints.
+                lidar_copy[start_index:end_index+1] = np.linspace(start_val, end_val, end_index - start_index + 1)
+            break
+        # plot_lidar_scan(lidar_copy)
 
         ########################################################################
         # PLANNING
@@ -181,7 +190,7 @@ def bridge(sid, data):
         else:
             target_speed = fast_speed
             prev_angle = steering_angle
-        f1tenth_1.throttle_command = target_speed / 20 #5 # [-1, 1]
+        f1tenth_1.throttle_command = target_speed / 10 #5 # [-1, 1]
         f1tenth_1.steering_command = np.clip(steering_angle, -max_steer, max_steer) # [-1, 1]
 
         ########################################################################
@@ -313,6 +322,14 @@ def find_speed(distance_new):
 
     return car_speed
 
+def plot_lidar_scan(scan):
+    plt.figure(1)
+    plt.clf()
+    angle = np.arange(len(scan))/len(scan)*270/180*math.pi - math.pi/4
+    plt.scatter(np.multiply(scan, np.cos(angle)), np.multiply(scan, np.sin(angle)))
+    plt.scatter(0, 0, color='red')
+    plt.pause(0.001)
+
 def plot_lidar_readings(readings, degreeStart, degreeEnd):
 
     
@@ -333,7 +350,7 @@ def plot_lidar_readings(readings, degreeStart, degreeEnd):
     plt.ylabel('Y (meters)')
     plt.axis('equal')
     plt.grid(True)
-    plt.legend()
+    # plt.legend()
     plt.show()
     plt.pause(0.001)
 

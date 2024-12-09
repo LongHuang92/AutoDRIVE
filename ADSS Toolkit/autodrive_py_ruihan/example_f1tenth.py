@@ -101,8 +101,8 @@ def bridge(sid, data):
             delta_angle = abs(prev_angle / steering_angle)
             if delta_angle < 0.9: #brake
                 prev_angle = steering_angle
-                steering_angle *= (1.1/delta_angle)
-                target_speed *= 0.8
+                steering_angle *= (1.2/delta_angle)
+                target_speed *= 0.6#0.8
             elif delta_angle < 1.02:
                 prev_angle = steering_angle
                 steering_angle *= 1.1
@@ -114,8 +114,8 @@ def bridge(sid, data):
             delta_angle = abs(prev_angle / steering_angle)
             if delta_angle < 0.95: #brake
                 prev_angle = steering_angle
-                target_speed *= (delta_angle * 0.75)
-                steering_angle *= 1.2
+                target_speed *= (delta_angle * 0.6)#0.75
+                steering_angle *= 1.25 #1.2
             elif delta_angle < 1.02:
                 prev_angle = steering_angle
                 steering_angle *= 1.02
@@ -127,7 +127,7 @@ def bridge(sid, data):
             delta_angle = abs(prev_angle/ steering_angle)
             if delta_angle < 1: #brake
                 prev_angle = steering_angle
-                target_speed *= (delta_angle * 0.75)
+                target_speed *= (delta_angle * 0.6)#0.75
             elif delta_angle > 2:
                 prev_angle = steering_angle
                 steering_angle *= 0.9
@@ -138,14 +138,14 @@ def bridge(sid, data):
             delta_angle = abs(steering_angle / prev_angle)
             if delta_angle < 1: #brake
                 prev_angle = steering_angle
-                target_speed *= 0.9
+                target_speed *= 0.75 #0.9
             else:
                 prev_angle = steering_angle
         else:
             target_speed = fast_speed
             prev_angle = steering_angle
-        print(F"delta angle:{delta_angle}")
-        f1tenth_1.throttle_command = target_speed / 20#5 # [-1, 1]
+        # print(F"delta angle:{delta_angle}")
+        f1tenth_1.throttle_command = target_speed / 15#5 # [-1, 1]
         f1tenth_1.steering_command = np.clip(steering_angle, -max_steer, max_steer) # [-1, 1]
 
         ########################################################################

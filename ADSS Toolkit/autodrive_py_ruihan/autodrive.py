@@ -7,6 +7,7 @@ from io import BytesIO
 from PIL import Image
 import cv2
 import torch
+from ultralytics import YOLO
 ################################################################################
 
 # Nigel class
@@ -132,8 +133,9 @@ class F1TENTH:
         # F1TENTH commands
         self.throttle_command   = None
         self.steering_command   = None
+        self.speed = None
         # object detection
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+        self.model =  torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
         self.model.to('cuda' if torch.cuda.is_available() else 'cpu')
         self.detections = None
     # Parse F1TENTH sensor data
