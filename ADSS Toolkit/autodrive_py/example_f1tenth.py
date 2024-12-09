@@ -8,6 +8,7 @@ import autodrive
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+# from sklearn.cluster import KMeans
 
 # added by Long 11/2//2024
 from localmap_racing.localMPCC import LocalMPCC
@@ -57,40 +58,54 @@ def bridge(sid, data):
 
         scan_adjusted_1 = scan_1.copy()
 
-        # global last_scan_1
-        # if last_scan_1 is not None:
-        #     scan_diff_1 = scan_1 - last_scan_1
+        global last_scan_1
+        if last_scan_1 is not None:
+            scan_diff_1 = scan_1 - last_scan_1
 
-        #     index_diff = np.where(scan_diff_1[450:650] > 1) # find points whose relative speed > 1
-        #     index_scan = np.where(scan_1[450:650] < 2) # find points whose relative distance < 2
-        #     index = np.intersect1d(index_diff[0], index_scan[0])
-        #     print(index_diff[0])
-        #     print(index_scan[0])
-        #     print(index)
+            range_start = 500
+            range_end = 600
 
-        #     # if index_scan[0].size > 20:
-        #     #     scan_adjusted_1[600:1081] = 0.5
-        #     #     print(scan_adjusted_1)
+            index_distance = np.where(scan_1[range_start:range_end] < 2) # find points whose relative distance less than a threshold
+            index_speed = np.where(scan_diff_1[range_start:range_end] > 0.5) # find points whose relative speed greater than a threshold
+            index = np.intersect1d(index_distance[0], index_speed[0])
+            # print(index_distance[0])
+            print(index)
+            # print(index)
 
-        #     # if index.size > 0:
-        #     #     scan_adjusted_1[450+index] = 6 
+            # if index_distance[0].size > 0:
+            #     scan_adjusted_1[0:range_start+index_distance[0][0]] = np.linspace(scan_1[0],scan_1[range_start+index_distance[0]][0],range_start+index_distance[0])
+            scan_adjusted_1[range_start+index] = np.inf
 
-        #     fig, axs = plt.subplots(4, 1, num=3, clear=True, figsize=(8, 10))
-        #     axs[0].plot(last_scan_1)
-        #     axs[0].set_ylim([0,10])
-        #     axs[0].set_ylabel('Last Scan')
-        #     axs[1].plot(scan_1)
-        #     axs[1].set_ylim([0,10])
-        #     axs[1].set_ylabel('Current Scan')
-        #     axs[2].plot(scan_diff_1)
-        #     axs[2].set_ylim([-5,10])
-        #     axs[2].set_ylabel('Scan Difference')
-        #     axs[3].plot(scan_adjusted_1)
-        #     axs[3].set_ylim([-5,10])
-        #     axs[3].set_ylabel('Adjusted Scan')
-        #     plt.pause(0.001)
+            # if index_distance[0].size > 20:
+            #     if index.size > 0:
+            #         scan_adjusted_1[range_start+index_distance[0]] = np.linspace(scan_1[range_start+np.min(index_distance[0])-1], 10, index_distance[0].size)
+            #         scan_adjusted_1[range_start+index_distance[0]] = np.inf
 
-        # last_scan_1 = scan_1
+            
+
+            # angle = np.arange(len(scan_1))/len(scan_1)*270/180*math.pi - math.pi/4
+
+            # # use clustering methods to find obstacles
+            # clustering = KMeans(n_clusters=4)
+            # X = np.vstack((np.multiply(scan_1, np.cos(angle)),np.multiply(scan_1, np.sin(angle)))).transpose()
+            # clustering.fit(X.clip(0,10))
+            # labels = clustering.labels_
+            # plt.scatter(X[:, 0], X[:, 1], c=labels)
+            # plt.title('Clustering')
+            # plt.show()
+
+            # fig, axs = plt.subplots(3, 1, num=3, clear=True, figsize=(8, 10))
+            # axs[0].plot(scan_1)
+            # axs[0].set_ylabel('Lidar Scan')
+            # axs[1].scatter(np.multiply(scan_1, np.cos(angle)), np.multiply(scan_1, np.sin(angle)))
+            # axs[1].scatter(0, 0, color='red')
+            # axs[1].set_ylabel('Lidar Scan')
+            # axs[2].scatter(np.multiply(scan_adjusted_1, np.cos(angle)), np.multiply(scan_adjusted_1, np.sin(angle)))
+            # axs[2].scatter(0, 0, color='red')
+            # axs[2].set_ylabel('Adjusted Scan')
+            # plt.pause(0.001)
+
+        last_scan_1 = scan_1
 
         # Adjust the lidar scan according to the measured obstacle speed
         # obstacle_index = moving_object_detection(camera_view) # there could be multiple moving objects 
@@ -155,6 +170,14 @@ def bridge(sid, data):
         #     sio.emit('Bridge', data= json_msg_2)
         # except Exception as exception_instance:
         #     print(exception_instance)
+
+def plot_lidar_scan(scan):
+    plt.figure(1)
+    plt.clf()
+    angle = np.arange(len(scan))/len(scan)*270/180*math.pi - math.pi/4
+    plt.scatter(np.multiply(scan, np.cos(angle)), np.multiply(scan, np.sin(angle)))
+    plt.scatter(0, 0, color='red')
+    plt.pause(0.001)
 
 ################################################################################
 
